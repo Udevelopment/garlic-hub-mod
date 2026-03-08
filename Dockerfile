@@ -22,8 +22,10 @@ RUN pecl install imagick \
     && docker-php-ext-enable imagick
 
 # Install Composer
-RUN curl -sS https://raw.githubusercontent.com/Udevelopment/garlic-hub-mod/refs/heads/main/installer | php -- --install-dir=/usr/local/bin --filename=composer
+#RUN curl -sS https://raw.githubusercontent.com/Udevelopment/garlic-hub-mod/refs/heads/main/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+COPY composer.phar /usr/local/bin/composer.phar
+COPY composer /usr/local/bin/composer
 # workkdir in the container
 WORKDIR /var/www
 

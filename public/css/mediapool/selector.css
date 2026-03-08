@@ -1,3 +1,8 @@
+figcaption.media-filename {/** intan - to see title at media selector***/
+    display: block;
+    overflow-wrap: break-word;
+    white-space: normal;
+}/** intan - to see title at media selector***/
 .mediaSelectContainer
 {
     display: flex;
@@ -15,7 +20,8 @@
         display:grid;
         grid-template-columns: repeat(auto-fill, 100px);
         grid-template-rows: repeat(auto-fill, 100px);
-        gap: 1em;
+        row-gap: 8em; /** intan - to see title at media selector***/
+        column-gap: 1em; /** intan - to see title at media selector***/
         padding: 1em;
         box-sizing: border-box;
         overflow-y: auto;
@@ -46,7 +52,7 @@
                 background-color: #f9f9f9;
                 border: 1px solid #ddd;
                 border-radius: var(--gh-border-radius);
-                overflow: hidden;
+                overflow: visible; /** intan - to see title at media selector***/
                 position: relative;
                 width: 100%;
                 aspect-ratio: 1 / 1;

@@ -58,7 +58,7 @@ export class MediaSelectorView
 			this.#mediaItems[media.mediaId] = media;
 			const mediaItem = media.renderSimple();
 			mediaItem.setAttribute("data-select-id", media.mediaId);
-			const caption = document.querySelector('figcaption.media-filename'); //intan file name
+			const caption = mediaItem.querySelector('figcaption.media-filename'); //intan file name
 			if (caption) { //intan file name
 				 caption.textContent =  media.filename; //intan file name
 			} 

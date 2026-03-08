@@ -35,32 +35,21 @@ use Psr\SimpleCache\InvalidArgumentException;
 /**
  * Handles orchestration of validation, fetching, and saving processes.
  */
-class Orchestrator
+class Orchestrator extends BaseTemplateOrchestrator
 {
 	/** @var array<string,string>  */
 	private array $template;
-	private $mediaUrl;
 
 	public function __construct(
 		private readonly TemplatePreparer    $templatePreparer,
 		private readonly TemplatesUsageService $templatesUsageService,
 		private readonly ExportImage         $exportImage,
 		private readonly TemplatesService    $templatesService,
-		private readonly Config $config
+		Config $config
 	)
 	{
-		$url = $this->config->getConfigValue('url', 'mediapool', 'content_server');
-		if ($url === '')
-		{
-			$isHttps = isset($_SERVER['HTTPS'])
-				|| ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'
-				|| ($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '') === 'on';
 
-			$url = ($isHttps ? 'https' : 'http') . '://' . ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST']);
-		}
-
-		$path = str_replace('public', '', $this->config->getConfigValue('originals', 'mediapool', 'directories'));
-		$this->mediaUrl = $url.$path;
+		parent::__construct($config);
 	}
 
 
@@ -91,23 +80,14 @@ class Orchestrator
 	 */
 	public function saveTemplate(int $templateId, string $content, string $imageBase64): int
 	{
-		// Scheme validation is not necessary
-
-		$JSON = json_decode($content, true);
-		if (!is_array($JSON) || !isset($JSON['objects']) || !is_array($JSON['objects']))
-		    return 0;
-
-		if (count($JSON['objects']) > 1000)
+		$content = $this->validate($content);
+		if ($content === '' )
 			return 0;
 
-		// reove Src for security reasons XSS etc
-		$this->removeSrc($JSON['objects']);
-
-		$saveData = ['content' => json_encode($JSON)];
 		if ($this->exportImage->exportBase64($templateId, $imageBase64) === false)
 			return 0;
 
-		return $this->templatesService->update($templateId, $saveData);
+		return $this->templatesService->update($templateId, ['content' => $content]);
 	}
 
 	public function delete(int $templateId): string
@@ -131,27 +111,4 @@ class Orchestrator
 
 		return json_encode($json);
 	}
-
-	private function restoreSrc(array &$objects): void
-	{
-		foreach ($objects as &$obj)
-		{
-			if (isset($obj['fileName']))
-				$obj['src'] = $this->mediaUrl .'/'. $obj['fileName'];
-
-			if (isset($obj['objects']) && is_array($obj['objects']))
-				$this->restoreSrc($obj['objects']);
-		}
-	}
-
-	private function removeSrc(array &$objects): void
-	{
-		foreach ($objects as &$obj)
-		{
-			unset($obj['src']);
-			if (isset($obj['objects']) && is_array($obj['objects']))
-				$this->removeSrc($obj['objects']);
-		}
-	}
-
 }

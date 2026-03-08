@@ -26,8 +26,8 @@ RUN pecl install imagick \
 
 COPY composer.phar /usr/local/bin/composer.phar
 COPY composer /usr/local/bin/composer
-sudo chmod 755 composer.phar
-sudo chmod 755 composer
+RUN chmod 755 /usr/local/bin/composer.phar
+RUN chmod 755 /usr/local/bin/composer
 # workkdir in the container
 WORKDIR /var/www
 

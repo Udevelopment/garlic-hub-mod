@@ -16,37 +16,33 @@
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+'use strict';
 
-export class ToggleButton
+export class BasePropertyService
 {
-	constructor(domElement)
+	#fabricWrapper;
+
+	constructor(fabricWrapper)
 	{
-		this.el = domElement
+		this.#fabricWrapper = fabricWrapper;
 	}
 
-	update(type, value)
+	get fabricWrapper()
 	{
-		const children = this.el.children;
-		if (type === 'display')
-		{
-			for (let i = 0; i < children.length; i++)
-			{
-				children[i].style.display = children[i].getAttribute("id") === value ? "block" : "none";
-			}
-		}
-		if (type === "active")
-		{
-			this.el.style.fill = this.el.getAttribute("id") === value ? "#269CC0" : "#000";
-		}
+		return this.#fabricWrapper;
 	}
 
-	getElement()
+	_getActiveObject()
 	{
-		return this.el
+		const object = this.#fabricWrapper.getActiveObject();
+		if (!object) throw new Error("No active object");
+		return object;
 	}
 
-	show(value)
+	_updateCanvas(object)
 	{
-		this.el.style.display = value ? "block" : "none";
+		this.#fabricWrapper.fireObjectModified(object);
+		this.#fabricWrapper.renderAll();
 	}
+
 }

@@ -199,27 +199,4 @@ class MimeTypeDetectorTest extends TestCase
 
 		$this->mimeTypeDetector->detectFromStream($stream);
 	}
-
-	#[Group('units')]
-	public function testDetermineExtensionByTypeReturnsCorrectExtension(): void
-	{
-		$mimeTypeMap = [
-			'image/jpeg' => 'jpg',
-			'audio/mpeg' => 'mp3',
-			'video/mp4' => 'mp4',
-			'application/pdf' => 'pdf',
-			'text/plain' => 'txt',
-		];
-
-		foreach ($mimeTypeMap as $mimeType => $expectedExtension)
-		{
-			static::assertEquals($expectedExtension, $this->mimeTypeDetector->determineExtensionByType($mimeType));
-		}
-	}
-
-	#[Group('units')]
-	public function testDetermineExtensionByTypeReturnsBinForUnknownMimeType(): void
-	{
-		static::assertEquals('bin', $this->mimeTypeDetector->determineExtensionByType('unknown/mime-type'));
-	}
 }

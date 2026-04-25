@@ -30,7 +30,7 @@ class TemplatePreparer
 
 	public function __construct(private readonly Translator $translator) {}
 
-	public function replace(int $id, $playlistId = 0): array
+	public function replace(int $templateId, int $itemId = 0, $playlistId = 0): array
 	{
 		$templateComposer = [
 			'LANG_MOVE_BACKGROUND' => $this->translator->translate('move_background', 'templates'),
@@ -67,32 +67,52 @@ class TemplatePreparer
 			'LANG_ALIGN_MIDDLE' => $this->translator->translate('align_middle', 'templates'),
 			'LANG_ALIGN_BOTTOM' => $this->translator->translate('align_bottom', 'templates'),
 			'LANG_RESOLUTION' => $this->translator->translate('resolution', 'templates'),
+			'LANG_SNAP_TO_GRID' => $this->translator->translate('snap_to_grid', 'templates'),
+			'LANG_NO_GRID' => $this->translator->translate('no_grid', 'templates'),
 			'LANG_ZOOM' => $this->translator->translate('zoom', 'main'),
 			'LANG_DUBLICATE' => $this->translator->translate('duplicate', 'templates'),
 			'LANG_DELETE' => $this->translator->translate('delete', 'main'),
 			'LANG_REPLACE_IMAGE' => $this->translator->translate('replace_image', 'templates'),
-			'LANG_LOCK' => $this->translator->translate('lock', 'templates'),
-			'LANG_UNLOCK' => $this->translator->translate('unlock', 'templates'),
 			'LANG_INSERT' => $this->translator->translate('insert', 'main'),
 			'LANG_SAVE' => $this->translator->translate('save', 'main'),
 			'LANG_CLOSE' => $this->translator->translate('close', 'main'),
 			'LANG_CONFIRM_CLOSE_EDITOR' => $this->translator->translate('confirm_close_composer', 'templates'),
+			'LANG_CONFIRM_RESET' => $this->translator->translate('confirm_reset', 'templates'),
 			'LANG_ADD_MEDIA' => $this->translator->translate('add', 'main'),
 			'LANG_APPLY_MEDIA' => $this->translator->translate('apply', 'main'),
 			'LANG_CANCEL' => $this->translator->translate('cancel', 'main'),
 			'LANG_TRANSFER' => $this->translator->translate('transfer', 'main'),
+			'TEMPLATE_ID' => $templateId
 		];
 
-		if ($playlistId > 0)
+		if ($itemId > 0 && $playlistId > 0)
 		{
-			$templateComposer['reset'] = [
-				'LANG_RESET' => $this->translator->translate('reset', 'templates')
+			$templateComposer['reset'] = ['LANG_RESET' => $this->translator->translate('reset', 'templates')];
+
+			$formats = [];
+			foreach ($this->translator->translateArrayForOptions('image_format_selects', 'templates') as $key => $value)
+			{
+				$formats[] = [
+					'FORMAT' => $key,
+					'LANG_FORMAT' => $value
+				];
+			}
+			$templateComposer['save_formats'] = [
+				'LANG_FORMATS' => $this->translator->translate('image_format', 'templates'),
+				'LANG_IMAGE_QUALITY' => $this->translator->translate('image_quality', 'templates')
 			];
-			$templateComposer['is_playlist_item'] = ['ITEM_ID' => $id, 'PLAYLIST_ID' => $playlistId];
+
+			$templateComposer['save_formats']['formats'] = $formats;
+			$templateComposer['is_playlist_item'] = ['ITEM_ID' => $itemId, 'PLAYLIST_ID' => $playlistId];
 		}
 		else
 		{
-			$templateComposer['is_admin'] = ['TEMPLATE_ID' => $id];
+			$templateComposer['is_selectable'] = [
+				'LANG_LOCK' => $this->translator->translate('lock', 'templates'),
+				'LANG_UNLOCK' => $this->translator->translate('unlock', 'templates'),
+				'LANG_SELECTABLE' => $this->translator->translate('selectable', 'templates'),
+				'LANG_UNSELECTABLE' => $this->translator->translate('unselectable', 'templates'),
+			];
 		}
 
 		return $templateComposer;
@@ -113,9 +133,9 @@ class TemplatePreparer
 				],
 				'footer_scripts' => [
 					'/js/external/fabric.min.js',
-					'/js/templates/canvas-composer/fonts_preview.js',
-					'/js/templates/canvas-composer/fontfaceobserver.js',
-					'/js/templates/canvas-composer/UndoRedo.js'
+					'/js/templates/canvas-composer/Fonts/fonts_preview.js',
+					'/js/templates/canvas-composer/Fonts/fontfaceobserver.js',
+					'/js/templates/canvas-composer/Utils/UndoRedo.js'
 				],
 				'footer_modules'   => ['/js/templates/canvas-composer/init.js']
 			],

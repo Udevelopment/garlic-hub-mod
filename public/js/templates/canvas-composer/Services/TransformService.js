@@ -16,16 +16,43 @@
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+'use strict';
 
-export class AbstractProperties
+import {BasePropertyService} from "./Properties/BasePropertyService.js";
+
+export class TransformService extends BasePropertyService
 {
-	MyCanvasView = {};
-	property     = undefined;
 
-	constructor()
+	constructor(fabricWrapper)
 	{
-		if (new.target === AbstractProperties)
-			throw new TypeError("Cannot construct Abstract instances directly");
+		super(fabricWrapper);
+	}
+
+	moveActiveObject(direction, step = 50)
+	{
+		const object = this._getActiveObject();
+		if (object === undefined)
+			return;
+
+		switch (direction)
+		{
+			case "ArrowLeft":
+				object.left -= step;
+				break;
+			case "ArrowRight":
+				object.left += step;
+				break;
+			case "ArrowUp":
+				object.top -= step;
+				break;
+			case "ArrowDown":
+				object.top += step;
+				break;
+			default:
+				break;
+		}
+
+		this._updateCanvas(object);
 	}
 
 }

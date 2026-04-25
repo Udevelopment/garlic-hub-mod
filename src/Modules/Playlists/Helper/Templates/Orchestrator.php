@@ -57,9 +57,9 @@ class Orchestrator extends BaseTemplateOrchestrator
 		}
 	}
 
-	public function build(int $itemId): array
+	public function build(): array
 	{
-		$replaced = $this->templatePreparer->replace($itemId, $this->item['playlist_id']);
+		$replaced = $this->templatePreparer->replace((int) $this->item['file_resource'], $this->item['item_id'], $this->item['playlist_id']);
 		return $this->templatePreparer->prepare($this->item['playlist_name'].' / '.$this->item['item_name'], $replaced);
 	}
 
@@ -69,10 +69,12 @@ class Orchestrator extends BaseTemplateOrchestrator
 		if ($content === '')
 			return 0;
 
-		if ($this->exportImage->exportBase64($itemId, $imageBase64) === false)
+		$this->exportImage->decode($imageBase64);
+		if ($this->exportImage->exportPlaylistItem($itemId) === false)
 			return 0;
 
-		return $this->itemsService->updateField($itemId, 'content_data', $content);
+		$saveData = ['content_data' => $content, 'mimetype' => $this->exportImage->getMimeType()];
+		return $this->itemsService->update($itemId, $saveData);
 	}
 
 	public function getContent(): string
@@ -85,6 +87,7 @@ class Orchestrator extends BaseTemplateOrchestrator
 
 		return json_encode($json);
 	}
+
 
 
 }

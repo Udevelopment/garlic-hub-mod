@@ -31,13 +31,27 @@ export class TextPropertiesService extends BasePropertyService
 	{
 		const object = this._getActiveObject();
 		const styles = object.getSelectionStyles(object.isEditing ? object.selectionStart : 0, object.isEditing ? object.selectionEnd : 9, false)
-		return styles && styles[0] ? styles[0].fontFamily : object.fontFamily
+		return styles[0] && styles[0].fontFamily ? styles[0].fontFamily : object.fontFamily
 	}
 
 	setTextFontFamily(fontFamily)
 	{
 		const object = this._getActiveObject();
 		object.setSelectionStyles({ fontFamily: fontFamily }, object.selectionStart === object.selectionEnd ? 0 : object.selectionStart, object.selectionStart === object.selectionEnd ? object.text.length : object.selectionEnd)
+		this._updateCanvas(object);
+	}
+
+	getTextFontSize()
+	{
+		const object = this._getActiveObject();
+		const styles = object.getSelectionStyles(object.isEditing ? object.selectionStart : 0, object.isEditing ? object.selectionEnd : 9, false)
+		return styles[0] && styles[0].fontSize ? styles[0].fontSize : object.fontSize
+	}
+
+	setTextFontSize(fontSize)
+	{
+		const object = this._getActiveObject();
+		object.setSelectionStyles({ fontSize: fontSize }, object.selectionStart === object.selectionEnd ? 0 : object.selectionStart, object.selectionStart === object.selectionEnd ? object.text.length : object.selectionEnd)
 		this._updateCanvas(object);
 	}
 
